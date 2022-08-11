@@ -23,7 +23,7 @@ test: $(NAME)
 	@./Webserv conf/nginx.conf
 
 save:
-	git commit -am $(MAKECMDGOALS);
-	git push 
+	git commit -am "$(MAKECMDGOALS)";
+	git push https://github.com/4b93f/webserv.git
 
 .PHONY:		all clean fclean re test

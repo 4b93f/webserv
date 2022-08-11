@@ -80,7 +80,7 @@ void Response::getMethod(Request & req, confData & conf)
     body = readHTML(conf, req.getUrl(), goodIndex(conf, req.getUrl()));
     //exit(0);
     content_lenght = itoa(body.size() + how_many(body));
-    content_type = setContentType();
+    content_type = req.gettype_data();
 }
 
 void Response::postMethod()
