@@ -288,6 +288,7 @@ char	*next_string(std::string str , std::string c)
 
 char	**server_split(std::string str, std::string strset)
 {
+	// maybe in c++
 	int		i;
 	int j  = 0;
 	char	**tab;

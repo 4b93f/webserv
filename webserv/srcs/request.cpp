@@ -44,6 +44,17 @@ void Request::getInfo(int connection)
     url = req2[1];
     version = req2[2];
     version.resize(strlen(version.c_str()) - 1);
+    std::string str;
+    for (int i = 0; req[i]; i++)
+    {
+        str = req[i];
+        if (!str.substr(0, 8).compare("Accept: "))
+        {
+            type_data = str.substr(8, str.find(',') - 8);
+            std::cout << "i found that ::  " << type_data << std::endl;
+            break ;
+        }
+    }
     return;
 }
 
@@ -63,4 +74,8 @@ std::string Request::getVersion()
 std::string Request::getHeader()
 {
     return header;
+}
+std::string Request::gettype_data()
+{
+    return type_data;
 }

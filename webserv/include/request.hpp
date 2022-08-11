@@ -27,12 +27,15 @@ class Request
         std::string getVersion();
         std::string getHeader();
         std::string getBody();
+        std::string gettype_data();
+        
     private:
         std::string method;
         std::string url;
         std::string version;
         std::string header;
         std::string body;
+        std::string type_data;
 };
 
 #endif

@@ -19,4 +19,11 @@ fclean:		clean
 
 re:			fclean all
 
-.PHONY:		all clean fclean re
+test: $(NAME)
+	@./Webserv conf/nginx.conf
+
+save:
+	git commit -am $(MAKECMDGOALS);
+	git push 
+
+.PHONY:		all clean fclean re test

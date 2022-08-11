@@ -15,11 +15,12 @@
 Conf::Conf()
 {
     nbr_serv = 0;
+    confList = new std::vector<confData>(1);
 }
 
 Conf::~Conf()
 {
-        
+    delete confList;
 }
 
 Conf::Conf(const Conf & other)
@@ -72,9 +73,10 @@ confData & Conf::getConflist(int index)
 
 void Conf::parsing(char *path)
 {
-    confList = new std::vector<confData>(1);
+   
     if (!(nbr_serv = (*confList)[0].parsing(path)))
         printerr("Error with parsing, 0 server found ...");
+    delete this->confList;
     confList = new std::vector<confData>(nbr_serv);
     for (int i = 0; i < nbr_serv; i++)
         (*confList)[i].scrapData();

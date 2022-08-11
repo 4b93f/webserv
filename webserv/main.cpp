@@ -14,7 +14,7 @@
 
 Conf conf;
 Request req;
-Response res;
+Response resp;
 fd_set fdset, copyset;
 std::vector<Socket> *sock;
 
@@ -74,11 +74,11 @@ void engine(int connection, int addrlen)
             std::cout << "Accept done ..." << std::endl;
             req.getInfo(connection);
             //Autodex index(req.getUrl(), conf.getConflist(0));
-            res.find_method(req, conf.getConflist(i));
-            res.concat_response();      
-            write(connection, res.getResponse().c_str(), res.getResponse().size());
+            resp.find_method(req, conf.getConflist(i));
+            resp.concat_response();      
+            write(connection, resp.getResponse().c_str(), resp.getResponse().size());
             close(connection);
-            exit(0);
+            // exit(0);
         }
     }
 }
