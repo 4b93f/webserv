@@ -40,28 +40,33 @@ Autodex::Autodex(std::string path, confData & conf)
     int i = -1;
     int autodex = 0;
 
-    std::cout << "FULL_PATH == " << full_path << std::endl;
+ //   std::cout << "FULL_PATH == " << full_path << std::endl;
     std::cout << "PATH == " << path << std::endl;
     if (stat(path.c_str(), &info) != 0)
         std::cout << "AH\n";
     while(++i < conf.getLocationNbr())
     {
-        
-        if (!conf.getLocation(i).getLocation_name().compare(path))
+       //std::cout << "location nbr = " << conf.getLocationNbr() << std::endl;
+	std::ifstream infile;
+	std::cout << "try to open : " << conf.getLocation(i).getPath() + path << std::endl;
+	infile.open(conf.getLocation(i).getPath() + path);
+        if (infile.is_open())
         {
+		full_path = conf.getLocation(i).getPath() + path;
             std::cout << "---- " << conf.getLocation(i).getLocation_name() << std::endl;
             std::cout << "---- " << conf.getLocation(i).getAutoIndex() << std::endl;
             autodex = conf.getLocation(i).getAutoIndex();
-            full_path = path + "/" + conf.getLocation(i).getIndex();
+          //  full_path = path + "/" + conf.getLocation(i).getIndex();
             if (!conf.getPath().compare("./www/index"))
                 path = conf.getPath();
             else
                 path = conf.getPath() + "/" + "index"; 
+		infile.close();
             break;
         }
     }
 
-    full_path = "www/index/index.html";
+  //  full_path = "www/index/index.html";
     if (autodex)
         out.open(full_path, std::ofstream::trunc);
     else
@@ -83,7 +88,7 @@ Autodex::Autodex(std::string path, confData & conf)
         tmp += "</ul>";
     }
     out << tmp;
-    exit(0);
+     // exit(0);
 }
 
 

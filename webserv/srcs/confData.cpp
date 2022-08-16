@@ -230,3 +230,18 @@ void confData::scrapData()
     }
     i++;
 }
+
+int	confData::findLocation(const std::string& name)
+{
+	std::ifstream infile;
+	for (int i = 0; i < getLocationNbr(); i++)
+	{
+		infile.open(getLocation(i).getPath() + name);
+		if (infile.is_open())
+		{
+			infile.close();
+			return i;
+		}
+	}
+	return -1;
+}

@@ -73,7 +73,8 @@ void engine(int connection, int addrlen)
                 printerr("cannot connect ...");
             std::cout << "Accept done ..." << std::endl;
             req.getInfo(connection);
-            //Autodex index(req.getUrl(), conf.getConflist(0));
+            Autodex index(req.getUrl(), conf.getConflist(0));
+	    std::cout << "test" << std::endl;
             resp.find_method(req, conf.getConflist(i));
             resp.concat_response();      
             write(connection, resp.getResponse().c_str(), resp.getResponse().size());

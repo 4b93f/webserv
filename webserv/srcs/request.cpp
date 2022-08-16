@@ -45,13 +45,14 @@ void Request::getInfo(int connection)
     version = req2[2];
     version.resize(strlen(version.c_str()) - 1);
     std::string str;
+    std::string searched = "Accept: ";
     for (int i = 0; req[i]; i++)
     {
         str = req[i];
-        if (!str.substr(0, 8).compare("Accept: "))
+        if (!str.substr(0, searched.size()).compare(searched))
         {
-            type_data = str.substr(8, str.find(',') - 8);
-            std::cout << "i found that ::  " << type_data << std::endl;
+            type_data = str.substr(searched.size(), str.find(',') - searched.size());
+            std::cout << "i found that type of request::  " << type_data << std::endl;
             break ;
         }
     }

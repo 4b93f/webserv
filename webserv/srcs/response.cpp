@@ -77,10 +77,12 @@ void Response::getMethod(Request & req, confData & conf)
     version = req.getVersion();
     status = setStatus();
     stat_msg = setStatMsg();
+    std::cout << "test ------------------" << std::endl << std::endl;
     body = readHTML(conf, req.getUrl(), goodIndex(conf, req.getUrl()));
-    //exit(0);
+   // exit(0);
     content_lenght = itoa(body.size() + how_many(body));
     content_type = req.gettype_data();
+    std::cout << "here -------------------:" << std::endl << std::endl;
 }
 
 void Response::postMethod()
@@ -95,7 +97,7 @@ void Response::delMethod()
 
 void Response::concat_response()
 {
-    std::cout << content_lenght << std::endl;
+    std::cout << "content_length  ======== " << content_lenght << std::endl;
     full_response = version + ' ' + itoa(status) + ' ' + stat_msg + '\n' + "Content-Type: " + content_type + '\n' + "Content-Lenght: " + content_lenght + "\n\n" + body;
 }
 

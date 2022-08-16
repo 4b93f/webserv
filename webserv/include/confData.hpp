@@ -43,6 +43,7 @@ class confData
         void setIndex(std::string str);
         void setErrorPage(std::string str);
         void setBodySize(std::string str);
+	int	findLocation(const std::string& name);
     private:
         std::string address;
         std::string port;

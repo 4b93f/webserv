@@ -52,9 +52,22 @@ std::string readHTML(confData & conf, std::string req_file, std::pair<std::strin
 	int j;
     int autodex = 0;
     struct stat info;
-	std::stringstream buff;
+	std::string buff;
+	std::string ret;
     std::cout << req_file << " & " << index.first << " & " << index.second << std::endl;
-    std::cout << conf.getPath() + "/" + req_file << std::endl;
+    int inde = conf.findLocation(req_file);
+    std::cout << " inde ========= " << inde << std::endl;
+  //int inde  = 1;
+    std::cout << conf.getLocation(inde).getPath() + req_file << std::endl;
+    std::ifstream infile;
+    infile.open(conf.getLocation(inde).getPath() + req_file);
+    if (infile.is_open())
+    {
+	while (getline(infile, buff))
+		ret += buff + "\n";
+    }
+   // std::cout << "ret ========== " <<  ret << std::endl; 
+    return (ret);
 	//std::string tmp(file);
     // if (index.first.empty())
 	// 	printerr("Error with index in the conf file ... ");
@@ -97,7 +110,7 @@ std::string readHTML(confData & conf, std::string req_file, std::pair<std::strin
     // buff << fd.rdbuf();
     // //std::cout << buff.str() << std::endl;
     // return buff.str();
-    exit(0);
+  //  exit(0);
 }
 
 std::string itoa(int a)
