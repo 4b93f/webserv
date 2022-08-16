@@ -32,7 +32,7 @@ class Response
         void postMethod();
         void init();
         void concat_response();
-        int setStatus();
+        int setStatus(Request& req, confData& conf);
         std::string setStatMsg();
         std::string setContentType();
         std::string getResponse();

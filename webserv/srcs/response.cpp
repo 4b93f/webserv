@@ -43,10 +43,12 @@ void Response::find_method(Request & req, confData & conf)
         postMethod();
 }
 
-int Response::setStatus() // Todo : make the status code work
+int Response::setStatus(Request& req, confData& conf) // Todo : make the status code work
 {
-    if (true)
+    if (conf.findLocation(req.getUrl()) >= 0)
         return 200;
+	else
+		return 404;
 }
 
 std::string Response::setStatMsg()
@@ -75,7 +77,7 @@ int how_many(std::string str)
 void Response::getMethod(Request & req, confData & conf)
 {
     version = req.getVersion();
-    status = setStatus();
+    status = setStatus(req, conf);
     stat_msg = setStatMsg();
     std::cout << "test ------------------" << std::endl << std::endl;
     body = readHTML(conf, req.getUrl(), goodIndex(conf, req.getUrl()));
