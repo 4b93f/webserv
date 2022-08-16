@@ -12,9 +12,9 @@
 
 #include "../include/header.hpp"
 
-Response::Response()
+Response::Response():content_lenght("0")
 {
-    
+	    
 }
 
 Response::~Response()
