@@ -130,7 +130,8 @@ std::string itoa(int a)
 int printerr(const char *str)
 {
     std::cerr << str << std::endl;
-    exit(1);
+  //  exit(1);
+  return 1;
 }
 
 static char	**malloc_free(char **str)
