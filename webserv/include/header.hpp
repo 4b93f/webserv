@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chly-huc <chly-huc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 02:21:03 by shyrno            #+#    #+#             */
-/*   Updated: 2022/09/13 18:32:17 by swautele         ###   ########.fr       */
+/*   Updated: 2022/09/13 21:12:41 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@
 //#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <cstring>
 
 #define PATH_ERROR "www/error/403.html"
 

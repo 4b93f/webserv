@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   autoindex.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chly-huc <chly-huc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 17:45:19 by chly-huc          #+#    #+#             */
-/*   Updated: 2022/09/13 18:29:06 by swautele         ###   ########.fr       */
+/*   Updated: 2022/09/13 21:34:08 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Autodex::Autodex()
 {
-    
+    std::cout << "Autoindex constructor " << std::endl;
 }
 
 Autodex::~Autodex()

@@ -2,9 +2,9 @@
 #define CGI_HPP
 
 #include "header.hpp"
-class webServ;
 
-class Cgi{
+class Cgi
+{
 	public:
 		Cgi();
 		~Cgi();
@@ -18,11 +18,11 @@ class Cgi{
 		void	setEnv(webServ& web, confData& conf);
 
 	private:
-	std::map<std::string, std::string>* pathmap;
-	std::vector<std::string>* env;
-//	std::string body;
-	std::string empty;
-	std::string	path;
+		std::map<std::string, std::string> pathmap;
+		std::vector<std::string> env;
+		std::string empty;
+		std::string	path;
+};
 /*	std::string redirect_status;
 	std::string gateway_interface;
 	std::string script_name;
@@ -41,6 +41,5 @@ class Cgi{
 	std::string server_port;
 	std::string server_protocol;
 	std::string server_software;*/
-};
 
 #endif

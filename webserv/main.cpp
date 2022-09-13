@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simonwautelet <simonwautelet@student.42    +#+  +:+       +#+        */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 02:20:16 by shyrno            #+#    #+#             */
-/*   Updated: 2022/08/29 17:04:13 by simonwautel      ###   ########.fr       */
+/*   Updated: 2022/09/13 21:32:12 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv, char **envp)
     webServ web(argv[1]);
 //    int i = -1;
 	web.setServ_Root(envp);
-	web.env = envp;
+	// web.env = envp;
     int connection = 0;
     int addrlen = 0;
     int backlog = 10;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simonwautelet <simonwautelet@student.42    +#+  +:+       +#+        */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 02:23:39 by shyrno            #+#    #+#             */
-/*   Updated: 2022/09/08 14:40:38 by simonwautel      ###   ########.fr       */
+/*   Updated: 2022/09/13 21:13:06 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ std::string index_exe(confData & conf, std::string url, std::string loc)
 
 int file_exist(std::string file)
 {
-    std::ifstream infile(file);
+    std::ifstream infile(file.c_str());
 
     if (!infile.good())
         return 0;

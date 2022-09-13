@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chly-huc <chly-huc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 18:43:26 by chly-huc          #+#    #+#             */
-/*   Updated: 2022/09/13 18:23:37 by swautele         ###   ########.fr       */
+/*   Updated: 2022/09/13 21:36:02 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ webServ::webServ(std::string argv)
 	req = new Request;
 	res = new Response;
 	indexing = new Autodex;
+	_cgi = new Cgi;
 
     conf->parsing(argv);
     sock.reserve(conf->getNbrServer());

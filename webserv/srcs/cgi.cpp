@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cgi.cpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/13 21:29:25 by shyrno            #+#    #+#             */
+/*   Updated: 2022/09/13 21:36:45 by shyrno           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cgi.hpp"
 
 void	start_script(Cgi& cgi)
@@ -49,21 +61,22 @@ void	start_script(Cgi& cgi)
 // 	web.getCgi().start_script();
 // }
 
-Cgi::Cgi():pathmap(new std::map<std::string, std::string>)
+Cgi::Cgi()
 {
-	(*pathmap)["php"] = "/opt/homebrew/bin/php";
+	std::cout <<"----------------------------------------------------------------------------------------------------------------------" <<env.size() << std::endl;
+	pathmap["php"] = "/opt/homebrew/bin/php";
 //	this->env = new std::vector<std::string>;
 }
 
 Cgi::~Cgi()
 {
-	delete pathmap;
+	
 }
 
 std::string& Cgi::getPath(const std::string& req_file)
 {
 	std::string ext(req_file.substr(req_file.rfind('.') + 1, req_file.size()));
-	return (*pathmap)[ext];
+	return pathmap[ext];
 }
 
 char**	Cgi::getArgv()
@@ -103,69 +116,69 @@ void	Cgi::setFullpath(webServ& web,confData& conf)
 
 void	Cgi::setEnv(webServ& web, confData& conf)
 {
-	std::vector<std::string>* header = new std::vector<std::string>;
-	splitstring(web.getReq().getHeader(), *header, '\n');
+	std::vector<std::string> header;
+	splitstring(web.getReq().getHeader(), header, '\n');
 
 	std::cout << "starting env init" << std::endl;
-	env->clear();
+	env.clear();
 	std::string tmp = "REDIRECT_STATUS=200";
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "GATEWAY_INTERFACE=CGI/1.1";
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "SCRIPT_NAME=" + this->path.substr(path.rfind('/') + 1, path.size());
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "SCRIPT_FILENAME=" + this->path;
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "REQUEST_METHOD=" + web.getReq().getMethod();
-	env->push_back(tmp);
-	tmp = "CONTENT_LENGTH=" + std::to_string(web.getReq().getBody().size());
-	env->push_back(tmp);
-	tmp = "CONTENT_TYPE=" + search_value_vect(*header, "Accept: ");
-	env->push_back(tmp);
+	env.push_back(tmp);
+	tmp = "CONTENT_LENGTH=" + itoa(web.getReq().getBody().size());
+	env.push_back(tmp);
+	tmp = "CONTENT_TYPE=" + search_value_vect(header, "Accept: ");
+	env.push_back(tmp);
 	tmp = "PATH_INFO=" + web.getReq().getUrl();
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "PATH_TRANSLATED=" + web.getReq().getUrl();
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "QUERY_STRING=" + web.getReq().getUrl().substr(web.getReq().getUrl().rfind('?') + 1, web.getReq().getUrl().size());
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "REMOTEaddr=" + conf.getAdress();
-	env->push_back(tmp);
-	tmp = "REMOTE_IDENT=" + search_value_vect(*header, "Authorization: ");
-	env->push_back(tmp);
-	tmp = "REMOTE_USER=" + search_value_vect(*header, "Authorization: ");
-	env->push_back(tmp);
+	env.push_back(tmp);
+	tmp = "REMOTE_IDENT=" + search_value_vect(header, "Authorization: ");
+	env.push_back(tmp);
+	tmp = "REMOTE_USER=" + search_value_vect(header, "Authorization: ");
+	env.push_back(tmp);
 	tmp = "REQUEST_URI=" + web.getReq().getUrl();
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "SERVER_NAME=";
-	if(search_value_vect(*header, "Host: ").size())
+	if(search_value_vect(header, "Host: ").size())
 	{
-		tmp += search_value_vect(*header, "Host: ");
+		tmp += search_value_vect(header, "Host: ");
 	}
 	else
 	{
 		tmp += conf.getServName();
 	}
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "SERVER_PORT=" + conf.getPort();
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "SERVER_PROTOCOL=HTTP/1.1";
-	env->push_back(tmp);
+	env.push_back(tmp);
 	tmp = "SERVER_SOFTWARE=Webserv/1.0";
-	env->push_back(tmp);
-	delete header;
+	env.push_back(tmp);
+	// delete header;
 }
 
 char**	Cgi::getEnvp()
 {
 	char** res = new char*[19];
 	res[18] = NULL;
-	for (unsigned long i = 0; i < env->size(); i++)
+	for (unsigned long i = 0; i < env.size(); i++)
 	{
-		res[i] = new char((*env)[i].size() + 1);
+		res[i] = new char(env[i].size() + 1);
 		res[i][env[i].size()] = '\0';
-		for (unsigned long j = 0; j <(*env)[i].size(); j++)
+		for (unsigned long j = 0; j < env[i].size(); j++)
 		{
-			res[i][j] = (*env)[i][j];
+			res[i][j] = env[i][j];
 		}
 	}
 	return res;

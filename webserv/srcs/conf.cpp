@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   conf.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simonwautelet <simonwautelet@student.42    +#+  +:+       +#+        */
+/*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 05:49:14 by shyrno            #+#    #+#             */
-/*   Updated: 2022/09/13 18:19:42 by swautele         ###   ########.fr       */
+/*   Updated: 2022/09/13 21:29:05 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Conf::Conf()
 {
+    std::cout << "Conf constructor" << std::endl;
     nbr_serv = 0;
 }
 
