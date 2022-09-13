@@ -1,5 +1,4 @@
 #include "cgi.hpp"
-#define BUFF_SIZE 50
 
 void	start_script(Cgi& cgi)
 {
@@ -50,21 +49,21 @@ void	start_script(Cgi& cgi)
 // 	web.getCgi().start_script();
 // }
 
-Cgi::Cgi()
+Cgi::Cgi():pathmap(new std::map<std::string, std::string>)
 {
-	pathmap["php"] = "/opt/homebrew/bin/php";
-//	this->path = new std::vector<std::string>;
+	(*pathmap)["php"] = "/opt/homebrew/bin/php";
+//	this->env = new std::vector<std::string>;
 }
 
 Cgi::~Cgi()
 {
-//	delete path;
+	delete pathmap;
 }
 
 std::string& Cgi::getPath(const std::string& req_file)
 {
 	std::string ext(req_file.substr(req_file.rfind('.') + 1, req_file.size()));
-	return pathmap[ext];
+	return (*pathmap)[ext];
 }
 
 char**	Cgi::getArgv()
@@ -80,10 +79,10 @@ char**	Cgi::getArgv()
 	return res;
 }
 
-const std::vector<std::string>& Cgi::getEnv() const
+/*const std::vector<std::string>& Cgi::getEnv() const
 {
-	return env;
-}
+	return *env;
+}*/
 
 const std::string& Cgi::getFullpath() const
 {
@@ -104,117 +103,69 @@ void	Cgi::setFullpath(webServ& web,confData& conf)
 
 void	Cgi::setEnv(webServ& web, confData& conf)
 {
-	std::vector<std::string> header;
-	splitstring(web.getReq().getHeader(), header, '\n');
+	std::vector<std::string>* header = new std::vector<std::string>;
+	splitstring(web.getReq().getHeader(), *header, '\n');
 
 	std::cout << "starting env init" << std::endl;
-	env.clear();
+	env->clear();
 	std::string tmp = "REDIRECT_STATUS=200";
-//	env["REDIRECT_STATUS"] = "200";
-	std::cout << tmp << std::endl;
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "GATEWAY_INTERFACE=CGI/1.1";
-	std::cout << tmp << std::endl;
-//	env["GATEWAY_INTERFACE"] = "CGI/1.1";
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "SCRIPT_NAME=" + this->path.substr(path.rfind('/') + 1, path.size());
-	std::cout << tmp << std::endl;
-//	env["SCRIPT_NAME"] = path.substr(path.rfind('/') + 1, path.size());
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "SCRIPT_FILENAME=" + this->path;
-	std::cout << tmp << std::endl;
-//	env["SCRIPT_FILENAME"] = "path";
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "REQUEST_METHOD=" + web.getReq().getMethod();
-	std::cout << tmp << std::endl;
-//	env["REQUEST_METHOD"] = "web.getReq().getMethod()";
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "CONTENT_LENGTH=" + std::to_string(web.getReq().getBody().size());
-	std::cout << tmp << std::endl;
-//	env["CONTENT_LENGTH"] = std::to_string(web.getReq().getBody().size());
-	env.push_back(tmp);
-	tmp = "CONTENT_TYPE=" + search_value_vect(header, "Accept: ");
-	std::cout << tmp << std::endl;
-//	env["CONTENT_TYPE"] = search_value_vect(header, "Accept: ");
-	env.push_back(tmp);
+	env->push_back(tmp);
+	tmp = "CONTENT_TYPE=" + search_value_vect(*header, "Accept: ");
+	env->push_back(tmp);
 	tmp = "PATH_INFO=" + web.getReq().getUrl();
-	std::cout << tmp << std::endl;
-//	env["PATH_INFO"] = "web.getReq().getUrl()";
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "PATH_TRANSLATED=" + web.getReq().getUrl();
-	std::cout << tmp << std::endl;
-//	env["PATH_TRANSLATED"] = web.getReq().getUrl();
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "QUERY_STRING=" + web.getReq().getUrl().substr(web.getReq().getUrl().rfind('?') + 1, web.getReq().getUrl().size());
-	std::cout << tmp << std::endl;
-//	env["QUERY_STRING"] = web.getReq().getUrl().substr(web.getReq().getUrl().rfind('?') + 1, web.getReq().getUrl().size());
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "REMOTEaddr=" + conf.getAdress();
-	std::cout << tmp << std::endl;
-//	env["REMOTEaddr"] = conf.getAdress();
-	env.push_back(tmp);
-	tmp = "REMOTE_IDENT=" + search_value_vect(header, "Authorization: ");
-	std::cout << tmp << std::endl;
-//	env["REMOTE_IDENT"] = search_value_vect(header, "Authorization: ");
-	env.push_back(tmp);
-	tmp = "REMOTE_USER=" + search_value_vect(header, "Authorization: ");
-	std::cout << tmp << std::endl;
-//	env["REMOTE_USER"] = search_value_vect(header, "Authorization: ");
-	env.push_back(tmp);
+	env->push_back(tmp);
+	tmp = "REMOTE_IDENT=" + search_value_vect(*header, "Authorization: ");
+	env->push_back(tmp);
+	tmp = "REMOTE_USER=" + search_value_vect(*header, "Authorization: ");
+	env->push_back(tmp);
 	tmp = "REQUEST_URI=" + web.getReq().getUrl();
-	std::cout << tmp << std::endl;
-//	env["REQUEST_URI"] = web.getReq().getUrl();
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "SERVER_NAME=";
-	if(search_value_vect(header, "Host: ").size())
+	if(search_value_vect(*header, "Host: ").size())
 	{
-//		env["SERVER_NAME"] = search_value_vect(header, "Host: ");
-		tmp += search_value_vect(header, "Host: ");
+		tmp += search_value_vect(*header, "Host: ");
 	}
 	else
 	{
-//		env["SERVER_NAME"] = conf.getServName();
 		tmp += conf.getServName();
 	}
-	std::cout << tmp << std::endl;
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "SERVER_PORT=" + conf.getPort();
-	std::cout << tmp << std::endl;
-//	env["SERVER_PORT"] = conf.getPort();
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "SERVER_PROTOCOL=HTTP/1.1";
-	std::cout << tmp << std::endl;
-//	env["SERVER_PROTOCOL"] = "HTTP/1.1";
-	env.push_back(tmp);
+	env->push_back(tmp);
 	tmp = "SERVER_SOFTWARE=Webserv/1.0";
-	std::cout << tmp << std::endl;
-//	env["SERVER_SOFTWARE"] = "Webserv/1.0";
-	env.push_back(tmp);
+	env->push_back(tmp);
+	delete header;
 }
 
 char**	Cgi::getEnvp()
 {
-	char** res = new char*[env.size() + 1];
-	res[env.size()] = NULL;
-/*	int j = 0;
-	for (std::map<std::string, std::string>::const_iterator i = env.begin(); i != env.end(); i++)
+	char** res = new char*[19];
+	res[18] = NULL;
+	for (unsigned long i = 0; i < env->size(); i++)
 	{
-		std::string tmp = i->first + "=" + i->second;
-		res[j] = new char(tmp.size() + 1);
-		res[j][tmp.size()] = '\0';
-		for (unsigned long k = 0; k < tmp.size(); k++)
-		{
-			res[j][k] = tmp[k];
-		}
-		j++;
-	}*/
-	for (unsigned long i = 0; i < env.size(); i++)
-	{
-		res[i] = new char(env[i].size() + 1);
+		res[i] = new char((*env)[i].size() + 1);
 		res[i][env[i].size()] = '\0';
-		for (unsigned long j = 0; j <env[i].size(); j++)
+		for (unsigned long j = 0; j <(*env)[i].size(); j++)
 		{
-			res[i][j] = env[i][j];
+			res[i][j] = (*env)[i][j];
 		}
 	}
 	return res;

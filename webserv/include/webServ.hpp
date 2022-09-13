@@ -6,13 +6,17 @@
 /*   By: chly-huc <chly-huc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 17:10:21 by shyrno            #+#    #+#             */
-/*   Updated: 2022/08/18 20:02:13 by chly-huc         ###   ########.fr       */
+/*   Updated: 2022/09/13 18:32:17 by swautele         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERVER_HPP
 #define WEBSERVER_HPP
 #include "header.hpp"
+class Response;
+class Socket;
+class Conf;
+class Autodex;
 class Cgi;
 
 class webServ

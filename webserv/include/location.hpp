@@ -6,12 +6,14 @@
 /*   By: chly-huc <chly-huc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 12:02:39 by chly-huc          #+#    #+#             */
-/*   Updated: 2022/08/22 11:04:52 by chly-huc         ###   ########.fr       */
+/*   Updated: 2022/09/13 18:21:46 by swautele         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
+
+#include "header.hpp"
 
 class location
 {
