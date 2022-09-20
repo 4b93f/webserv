@@ -170,8 +170,8 @@ void	Cgi::setEnv(webServ& web, confData& conf)
 
 char**	Cgi::getEnvp()
 {
-	char** res = new char*[19];
-	res[18] = NULL;
+	char** res = new char*[env.size() + 1];
+	res[env.size()] = NULL;
 	for (unsigned long i = 0; i < env.size(); i++)
 	{
 		res[i] = new char(env[i].size() + 1);
