@@ -40,18 +40,19 @@ Request& Request::operator=(const Request& other)
 
 void Request::getInfo(int connection)
 {
-    std::vector<std::string> req, req2;
+    std::vector<std::string> req, req2, req3;
     int ret;
     char buff[10000];
     if ((ret = recv(connection, buff, sizeof(buff), 0)) < 0)
         printerr("Error with recv ...");
+    std::string str_temp = buff;
     std::cout << "oof" << std::endl;
 	if (ret == 0)
        printerr("Error with recv : Connection close ...");
     std::cout << "---------------------------\n" << buff << "\n-------------------------\n";
  //   req = ft_split(buff, '\n');
  //   req2 = ft_split(req[0], ' ');
- 	splitstring(buff, req, '\n');
+    splitstring(buff, req, '\n');
 	splitstring(req[0], req2, ' ');
     if (!req2[0].compare("GET") || !req2[0].compare("POST") || !req2[0].compare("DELETE"))
         method = req2[0];
@@ -70,7 +71,33 @@ void Request::getInfo(int connection)
             break ;
         }
     }
-    body = buff;
+    int index;
+    std::string tmp = str_temp;
+    while(tmp.find("\n") != std::string::npos)
+    {
+        print("wtf");
+        std::string tmp_2;
+        index = tmp.find("\n");
+        tmp_2 = tmp.substr(0, index);
+        if(tmp_2.empty())
+        {
+            print("tmp is empty");
+            break;
+        }
+        header += tmp_2 + "\n";
+        tmp = tmp.substr(index + 1, tmp.size());
+    }
+    body =  tmp;
+    print("STR_TEMP : \n");
+    print(str_temp);
+    print("INDEX : \n");
+    std::cout << index << std::endl;
+    print("HEADER : \n");
+    print(header);
+    print("HEADER END \n");
+    print("BODY : \n");
+    print(body);
+    print("BODY END \n");
     return;
 }
 

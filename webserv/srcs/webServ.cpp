@@ -24,13 +24,12 @@ webServ::webServ()
 
 webServ::webServ(std::string argv)
 {
-	conf = new Conf;
+    conf = new Conf;
 	req = new Request;
 	res = new Response;
 	indexing = new Autodex;
 	_cgi = new Cgi;
 	max_body_size = 0;
-
     conf->parsing(argv);
     sock.reserve(conf->getNbrServer());
 	std::cout << "nombre de server = " << conf->getNbrServer() << std::endl;
