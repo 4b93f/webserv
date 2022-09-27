@@ -91,16 +91,27 @@ void Response::setStatMsg()
 			stat_msg = "Accepted";
 			break;
 		case 203:
-			stat_msg = "Non-Authoritative Information";
+			stat_msg = "Non-Authoritative Information"; //Ce code de statut peut apparaître lorsqu’un proxy est utilisé.
+                                                        // Cela signifie que le serveur proxy a reçu du serveur d’origine
+                                                        // un code de statut 200 « Everything is OK », mais qu’il a modifié
+                                                        // la réponse avant de la transmettre à votre navigateur.
 			break;
 		case 204:
-			stat_msg = "No Content";
+			stat_msg = "No Content"; //Ce code signifie que le serveur a bien traité la requête,
+                                     // mais qu’il ne retournera aucun contenu.
 			break;
 		case 205:
-			stat_msg = "Reset Content";
+			stat_msg = "Reset Content"; //Comme un code 204, cela signifie que le serveur a traité la requête
+                                        // mais ne va pas renvoyer de contenu.
+                                        // Cependant, il faut également que votre navigateur réinitialise l’affichage du document.
 			break;
 		case 206:
-			stat_msg = "Partial Content";
+			stat_msg = "Partial Content"; //Vous pouvez voir ce code de statut si votre client HTTP
+                                          // (également appelé votre navigateur) utilise des « en-têtes de plage ».
+                                          // Cela permet à votre navigateur de reprendre les téléchargements en pause,
+                                          // ainsi que de diviser un téléchargement en plusieurs flux.
+                                          // Un code 206 est envoyé lorsqu’un en-tête de plage fait que
+                                          // le serveur n’envoie qu’une partie de la ressource demandée.
 			break;
 		case 207:
 			stat_msg = "Multi-Status";
@@ -112,19 +123,36 @@ void Response::setStatMsg()
 			stat_msg = "IM Used";
 			break;
 		case 300:
-			stat_msg = "Multiple Choices";
+			stat_msg = "Multiple Choices";  //Parfois, il peut y avoir plusieurs ressources possibles
+                                            // avec lesquelles le serveur peut répondre pour satisfaire
+                                            // la demande de votre navigateur. Un code de statut 300
+                                            // signifie que votre navigateur doit maintenant choisir entre les deux.
+                                            // Cela peut se produire lorsque plusieurs extensions de type
+                                            // de fichier sont disponibles, ou si le serveur subit une clarification
+                                            // du sens des mots.
 			break;
 		case 301:
-			stat_msg = "Moved Permanently";
+			stat_msg = "Moved Permanently"; //Ce code est délivré lorsqu’une page web ou une ressource a été remplacée
+                                            // de manière permanente par une autre ressource.
+                                            // Il est utilisé pour les redirection d’URL.
 			break;
 		case 302:
-			stat_msg = "Found";
+			stat_msg = "Found"; // Ce code est utilisé pour indiquer que
+                                // la ressource demandée a été trouvée, mais pas à l’endroit où elle était attendue.
+                                // Il est utilisé pour la redirection temporaire d’URL.
 			break;
 		case 303:
-			stat_msg = "See Other";
+			stat_msg = "See Other"; //Essentiellement, un code 303 indique à votre navigateur
+                                    // qu’il a trouvé la ressource demandée par l’intermédiaire de POST,
+                                    // PUT ou DELETE. Toutefois, pour le récupérer via GET,
+                                    // vous devez faire la requête appropriée pour une URL différente de celle
+                                    // que vous avez utilisée précédemment.
 			break;
 		case 304:
-			stat_msg = "Not Modified";
+			stat_msg = "Not Modified"; // Ce code indique au navigateur que les ressources stockées
+                                        // dans le cache du navigateur n’ont pas changé.
+                                        // Il est utilisé pour accélérer la livraison des pages web
+                                        // en réutilisant les ressources précédemment téléchargées.
 			break;
 		case 305:
 			stat_msg = "Use Proxy";
@@ -133,10 +161,16 @@ void Response::setStatMsg()
 			stat_msg = "Switch Proxy";
 			break;
 		case 307:
-			stat_msg = "Temporary Redirect";
+			stat_msg = "Temporary Redirect"; //Ce code de statut a remplacé le 302 « Found »
+                                            // comme action appropriée lorsqu’une ressource
+                                            // a été temporairement déplacée vers une autre URL.
+                                            // Contrairement au code d’état 302, il ne permet pas de modifier la méthode HTTP.
 			break;
 		case 308:
-			stat_msg = "Permanent Redirect";
+			stat_msg = "Permanent Redirect"; // Le code de statut 308 est le successeur du code 301 « Moved Permanently ».
+                                            // Il ne permet pas de modifier la méthode HTTP et indique
+                                            // que la ressource demandée est désormais située de façon permanente
+                                            // sur une nouvelle URL.
 			break;
 		case 400:
 			stat_msg = "Bad Request";
@@ -148,58 +182,72 @@ void Response::setStatMsg()
 			stat_msg = "Payment Required";
 			break;
 		case 403:
-			stat_msg = "Forbidden";
+			stat_msg = "Forbidden"; //Ce code est renvoyé lorsqu’un utilisateur tente d’accéder à quelque chose
+                                    // qu’il n’a pas la permission de voir.
+                                    // Par exemple, essayer d’accéder à un contenu protégé par un mot de passe
+                                    // sans se connecter peut produire une erreur 403.
 			break;
 		case 404:
 			stat_msg = "Not Found";
 			break;
 		case 405:
-			stat_msg = "Method Not Allowed";
+			stat_msg = "Method Not Allowed"; // Cela est généré lorsque le serveur
+                                            // d’hébergement (serveur d’origine) prend en charge
+                                            // la méthode reçue, mais pas la ressource cible.
 			break;
 		case 406:
-			stat_msg = "Not Acceptable";
+			stat_msg = "Not Acceptable"; //La ressource demandée est capable de générer uniquement du contenu
+                                        // qui n’est pas acceptable selon les en-têtes d’acceptation envoyés dans la requête.
 			break;
 		case 407:
 			stat_msg = "Proxy Authentication Required";
 			break;
 		case 408:
-			stat_msg = "Request Timeout";
+			stat_msg = "Request Timeout";   // le serveur n’a pas reçu la requête complète envoyée par le navigateur.
+                                            // Une des causes possibles pourrait être une congestion
+                                            // entraînant la perte de paquets de données entre le navigateur et le serveur.
 			break;
 		case 409:
-			stat_msg = "Conflict";
+			stat_msg = "Conflict";  //Un code d’état 409 signifie que le serveur n’a pas pu traiter la requête de votre navigateur
+                                    // parce qu’il y a un conflit avec la ressource concernée.
+                                    // Cela se produit parfois en raison de multiples modifications simultanées.
 			break;
 		case 410:
-			stat_msg = "Gone";
+			stat_msg = "Gone";  //Ce code est similaire au code 404 « Non trouvé »,
+                                // sauf que le code 410 indique que l’état est attendu et permanent.
 			break;
 		case 411:
-			stat_msg = "Length Required";
+			stat_msg = "Length Required";   //Cela signifie que la ressource demandée exige que le client spécifie
+                                            // une certaine longueur et qu’il ne l’a pas fait.
 			break;
 		case 412:
-			stat_msg = "Precondition Failed";
+			stat_msg = "Precondition Failed";   // Votre navigateur incluait certaines conditions dans ses en-têtes de requête,
+                                                // et le serveur ne répondait pas à ces spécifications.
 			break;
 		case 413:
-			stat_msg = "Payload Too Large";
+			stat_msg = "Payload Too Large"; //Votre demande est plus importante que le serveur ne veut ou ne peut la traiter.
 			break;
 		case 414:
-			stat_msg = "URI Too Long";
+			stat_msg = "URI Too Long";  //C’est généralement le résultat d’une requête GET qui a été encodée
+                                        // comme une chaîne de requête trop grande pour que le serveur puisse la traiter.
 			break;
 		case 415:
-			stat_msg = "Unsupported Media Type";
+			stat_msg = "Unsupported Media Type";    //La requête comprend un type de média que le serveur ou la ressource ne prend pas en charge.
 			break;
 		case 416:
-			stat_msg = "Range Not Satisfiable";
+			stat_msg = "Range Not Satisfiable"; //Votre requête concernait une partie d’une ressource que le serveur ne peut pas retourner.
 			break;
 		case 417:
-			stat_msg = "Expectation Failed";
+			stat_msg = "Expectation Failed";    //Le serveur n’est pas en mesure de répondre aux exigences spécifiées dans le champ d’en-tête attendu de la requête.
 			break;
 		case 418:
-			stat_msg = "I'm a Teapot";
+			stat_msg = "I'm a Teapot"; // Poisson d'avril
 			break;
 		case 421:
 			stat_msg = "Misdirected Request";
 			break;
 		case 422:
-			stat_msg = "Unprocessable Entity";
+			stat_msg = "Unprocessable Entity"; //La requête du client contient des erreurs sémantiques, et le serveur ne peut pas la traiter.
 			break;
 		case 423:
 			stat_msg = "Locked";
@@ -208,37 +256,42 @@ void Response::setStatMsg()
 			stat_msg = "Failed Dependency";
 			break;
 		case 425:
-			stat_msg = "Too Early";
+			stat_msg = "Too Early"; //Ce code est envoyé lorsque le serveur ne veut pas traiter une requête parce qu’elle peut être rejouée.
 			break;
 		case 426:
-			stat_msg = "Upgrade Required";
+			stat_msg = "Upgrade Required"; //En raison du contenu du champ de l’en-tête de la demande de mise à niveau, le client doit passer à un protocole différent.
 			break;
 		case 428:
-			stat_msg = "Precondition Required";
+			stat_msg = "Precondition Required"; //Le serveur exige que des conditions soient spécifiées avant de traiter la requête.
 			break;
 		case 429:
-			stat_msg = "Too Many Requests";
+			stat_msg = "Too Many Requests"; //Cela est généré par le serveur lorsque l’utilisateur a envoyé trop de requêtes dans un laps de temps donné.
 			break;
 		case 431:
-			stat_msg = "Request Header Fields Too Large";
+			stat_msg = "Request Header Fields Too Large"; // L’opérateur du serveur a reçu une demande d’interdiction d’accès à la ressource que vous avez demandée
 			break;
 		case 451:
 			stat_msg = "Unavailable For Legal Reasons";
 			break;
+		case 499:
+			stat_msg = "Client Closed Request"; // Cette information est renvoyée par NGINX lorsque le client ferme la requête alors que Nginx est toujours en train de la traiter.
+			break;
 		case 500:
-			stat_msg = "Internal Server Error";
+			stat_msg = "Internal Server Error"; // Un problème est survenu sur le serveur et la ressource demandée n’a pas été fournie.
 			break;
 		case 501:
 			stat_msg = "Not Implemented";
 			break;
 		case 502:
-			stat_msg = "Bad Gateway";
+			stat_msg = "Bad Gateway";   //indique que le serveur, tout en agissant comme une passerelle ou un proxy,
+                                        // a reçu une réponse non valide d’un serveur entrant auquel il a accédé en tentant de répondre à la requête.
 			break;
 		case 503:
-			stat_msg = "Service Unavailable";
+			stat_msg = "Service Unavailable"; //La requête ne peut pas être complétée à ce stade.
 			break;
 		case 504:
-			stat_msg = "Gateway Timeout";
+			stat_msg = "Gateway Timeout";   // Il s’agit du code renvoyé lorsque deux serveurs sont impliqués
+                                            // dans le traitement d’une requête et que le premier serveur attend la réponse du second.
 			break;
 		case 505:
 			stat_msg = "HTTP Version Not Supported";
@@ -252,12 +305,23 @@ void Response::setStatMsg()
 		case 508:
 			stat_msg = "Loop Detected";
 			break;
+        case 509:
+            stat_msg = "Bandwidth Limit Exceeded"; //signifie que votre site web utilise plus de bande passante que ce que votre hébergeur autorise.
+            break;
 		case 510:
 			stat_msg = "Not Extended";
 			break;
 		case 511:
-			stat_msg = "Network Authentication Required";
+			stat_msg = "Network Authentication Required";   // Ce code de statut est envoyé lorsque le réseau que vous essayez d’utiliser
+                                                            // nécessite une forme d’authentification avant d’envoyer votre requête au serveur.
 			break;
+        case 521:
+            stat_msg = "Web Server Is Down"; // Cela signifie que votre navigateur web a pu se connecter avec succès à Cloudflare,
+                                                // mais que Cloudflare n’a pas pu se connecter au serveur web d’origine.
+            break;
+        case 525:
+            stat_msg = "SSL Handshake Failed"; // signifie que le serveur et le navigateur n’ont pas pu établir une connexion sécurisée.
+            break;
 		default:
 			stat_msg = "Unknown";
 			break;
@@ -357,7 +421,7 @@ void Response::MethodPost(webServ & web, confData & conf)
 	{
 		std::vector<std::pair<std::string, std::string> > post(post_arg(web.getReq().getBody(), nbr));
 		post_exe(web, post, conf);
-		MethodGet(web, conf);
+//		MethodGet(web, conf);
 	}
 }
 
