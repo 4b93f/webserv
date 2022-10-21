@@ -6,7 +6,7 @@
 /*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 18:43:26 by chly-huc          #+#    #+#             */
-/*   Updated: 2022/10/21 01:48:11 by shyrno           ###   ########.fr       */
+/*   Updated: 2022/10/21 02:38:06 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ webServ::webServ()
 	indexing = new Autodex;
 	_cgi = new Cgi;
 	max_body_size = 0;
-	
+	connection = -1;
 }
 
 webServ::webServ(std::string argv, char **envp)
@@ -31,6 +31,7 @@ webServ::webServ(std::string argv, char **envp)
 	indexing = new Autodex;
 	_cgi = new Cgi;
 	max_body_size = 0;
+	connection = -1;
 	this->env = envp;
 
     conf->parsing(argv);
@@ -117,6 +118,11 @@ int webServ::getMax_body_size()
 	return max_body_size;
 }
 
+int webServ::getConnection()
+{
+	return connection;
+}
+
 void webServ::setbool_redir(std::vector<std::string> vec)
 {
     std::string str;
@@ -133,6 +139,12 @@ void webServ::setMax_body_size(int i)
 {
 	max_body_size = i;
 }
+
+void webServ::setConnection(int fd)
+{
+	connection = fd;
+}
+
 
 void webServ::del_redir()
 {

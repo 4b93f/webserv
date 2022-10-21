@@ -6,7 +6,7 @@
 /*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 01:02:50 by shyrno            #+#    #+#             */
-/*   Updated: 2022/10/21 01:47:12 by shyrno           ###   ########.fr       */
+/*   Updated: 2022/10/21 03:42:14 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,9 +173,12 @@ void Request::clear_info()
     body = "";
     version = "";
     query_s = "";
-    wrote = 0;
-    fclose(brutbody);
+
+    if (brutbody->_fileno > 0)
+        fclose(brutbody);
     brutbody = tmpfile();
+    wrote = 0;
+    std::cout << "out" << std::endl;
 }
 
 std::string Request::getQuery_string()
@@ -190,7 +193,7 @@ int Request::getBrutbody_fileno()
     {
         fd = fileno(brutbody);
         if (fd == -1)
-            exit(0);
+            printerr("Error with brutbody");
     }
     return fd;
 }

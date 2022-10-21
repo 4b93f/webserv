@@ -6,7 +6,7 @@
 /*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 02:20:16 by shyrno            #+#    #+#             */
-/*   Updated: 2022/10/21 01:57:01 by shyrno           ###   ########.fr       */
+/*   Updated: 2022/10/21 04:11:32 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ fd_set sstock, sready, rstock, rready;
 int g_ctrl_called = 0;
 int max_fd;
 std::vector<std::string> ip_vec;
+int done = 0;
 
 int select_connection(int connection)
 {
@@ -131,11 +132,11 @@ int error_handling(webServ & web)
     return 1;
 }
 
-int routine(webServ &web, std::string str, char *buffer, int connection, int ret, int i)
+int routine(webServ &web, std::string str, char *buffer, int ret, int i)
 {
     if (!str.empty())
     {
-        web.getReq().getInfo(connection, str);
+        web.getReq().getInfo(web.getConnection(), str);
         std::string tmp = buffer;
         int sizeheader = tmp.find("\r\n\r\n") + 4;
         if (web.getReq().getBrutbody_fileno() != -1)
@@ -144,9 +145,9 @@ int routine(webServ &web, std::string str, char *buffer, int connection, int ret
             return printerr("Error with brutbody");
         while (!g_ctrl_called && web.getReq().getWrote() < atoi(web.getReq().getContentLength().data()) && web.getReq().getWrote() >= 0)
         {
-            // if (!select_connection(connection))
+            // if (!select_web.getConnection()(web.getConnection()))
             //      return 0;
-            if ((ret = recv(connection, buffer, BUFFER_SIZE - 1, 0)) > 0)
+            if ((ret = recv(web.getConnection(), buffer, BUFFER_SIZE - 1, 0)) > 0)
             {
                 if (web.getReq().getBrutbody_fileno() != -1)
                     web.getReq().Write_Brutbody(buffer, ret);
@@ -159,9 +160,8 @@ int routine(webServ &web, std::string str, char *buffer, int connection, int ret
         long count = 0;
         for (unsigned long i = 0; i < web.getRes().getResponse().size(); i += count)
         {
-		    if (!select_connection_send(connection))
-        	    return printerr("Error with Select send ...");
-            if ((count = send(connection, web.getRes().getResponse().data() + i, web.getRes().getResponse().size() - i, 0)) < 0)
+            done = 1;
+            if ((count = send(web.getConnection(), web.getRes().getResponse().data() + i, web.getRes().getResponse().size() - i, 0)) < 0)
                 return printerr("Error with send ...");
             if (!count)
                 break;
@@ -169,11 +169,12 @@ int routine(webServ &web, std::string str, char *buffer, int connection, int ret
         web.getCgi().setCGIBool(0);
         if (web.getReq().getBrutbody_fileno() != -1)
             fclose(web.getReq().getBrutBody());
+        web.getRes().clear_info();
     }
     return 1;
 }
 
-int engine(webServ & web, int *connection)
+int engine(webServ & web)
 {
     char buffer[BUFFER_SIZE];
     std::string str = "";
@@ -181,33 +182,40 @@ int engine(webServ & web, int *connection)
     int i = 0;
     for(std::vector<Socket>::iterator it = web.getSock().begin(); it != web.getSock().end();it++)
     {
-        if (FD_ISSET(it->getFd(), &sready))
+        if (FD_ISSET(web.getConnection(), &sready))
         {
-            memset(buffer, 0, BUFFER_SIZE);
-            struct sockaddr client_address;
-	        int addrlen = sizeof(sizeof(struct sockaddr_in));
-            //std::cout << "Accept ... " << std::endl;
-            if ((*connection = accept(it->getFd(), (struct sockaddr*)&client_address, (socklen_t*)&addrlen)) < 0)
-                return printerr("Error with accept ...");
-            if ((fcntl(*connection, F_SETFL, O_NONBLOCK)) < 0)
-                return printerr("Error with fcntl ...");
-            if (!select_connection(*connection))
-                return 0;
-            // std::cout << "This if fd before accept : " << it->getFd() << std::endl;
-            //std::cout << "fd of connection after accept : " << connection << std::endl;
-            //std::cout << "errno : " << errno << std::endl;
-            if ((ret = recv(*connection, buffer, sizeof(buffer) - 1, 0)) > 0)
+            if ((ret = recv(web.getConnection(), buffer, sizeof(buffer) - 1, 0)) > 0)
             {
                 buffer[ret] = '\0';
                 str += buffer;
-                if (!routine(web, str, buffer, *connection, ret, i))
+                if (!routine(web, str, buffer, ret, i))
                     return printerr("Error with routine ...");
             }
             else
                 if (ret < 0)
                     return printerr("Recv -1 ...");
+            //std::cout << "Ret : " << ret << std::endl;
+            break;
         }
-        i++;
+        if (FD_ISSET(it->getFd(), &sready))
+        {
+            
+            memset(buffer, 0, BUFFER_SIZE);
+            struct sockaddr client_address;
+	        int addrlen = sizeof(sizeof(struct sockaddr_in));
+            //std::cout << "Accept ... " << std::endl;
+            if (web.getConnection() == -1)
+            {
+                if ((ret = accept(it->getFd(), (struct sockaddr*)&client_address, (socklen_t*)&addrlen)) < 0)
+                    return printerr("Error with accept ...");
+                web.setConnection(ret);
+                if ((fcntl(web.getConnection(), F_SETFL, O_NONBLOCK)) < 0)
+                    return printerr("Error with fcntl ...");
+            // if (!select_connection(web.getConnection()))
+                std::cout << "connection fd : " << web.getConnection() << std::endl;
+                return 1;
+            }
+        }
     }
     return 1;
 }
@@ -244,6 +252,49 @@ int loopselect()
     return 1;
 }
 
+int selecting(webServ & web)
+{
+    int status = 0;
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    while(!g_ctrl_called && status == 0)
+    {
+        FD_ZERO(&sready);
+        FD_ZERO(&rready);
+        sready = sstock;
+        if (web.getConnection() != -1)
+        {
+            std::cout << "Set connection to sready...\n";
+            FD_SET(web.getConnection(), &sready);
+            if (!done)
+                FD_SET(web.getConnection(), &rready);
+            if (web.getConnection() >= max_fd)
+                max_fd = web.getConnection();
+        }
+        for (int i = 0; i < 100; i++)
+            if(FD_ISSET(i, &sready))
+                std::cout << i << std::endl;
+        for (int i = 0; i < 100; i++)
+            if(FD_ISSET(i, &rready))
+                std::cout << i << std::endl;
+        // rready = rstock;
+        //std::cout << "max fd : " << max_fd << std::endl;
+        usleep(20);
+        std::cout << "Loop Select ..." << std::endl;
+        if ((status = select(FD_SETSIZE, &sready, &rready, NULL, &tv)) < 0)
+        {
+            if (!g_ctrl_called)
+                return printerr("Error with select ...");
+            return (0);
+        }
+        std::cout << "UH\n" << std::endl;
+    }
+    if (g_ctrl_called)
+        return 0;
+    return 1;
+}
+
 int main(int argc, char **argv, char **envp)
 {
     FD_ZERO(&sstock);
@@ -264,10 +315,16 @@ int main(int argc, char **argv, char **envp)
     signal(SIGINT, &ctrl_c);
     while(!g_ctrl_called)
     {
-        int connection = -1;
-        if (!loopselect() || (!engine(web, &connection)))
+        if (!selecting(web) || (!engine(web)))
             break;
-        close(connection);
+        //std::cout << "MH\n";
+        if (done && web.getConnection() > 0)
+        {
+            //std::cout << "Close" << std::endl;
+            close(web.getConnection());
+            web.setConnection(-1);
+            done = 0;
+        }
     }
     web.cleave_info();
 }

@@ -6,7 +6,7 @@
 /*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 17:10:21 by shyrno            #+#    #+#             */
-/*   Updated: 2022/10/07 03:13:09 by shyrno           ###   ########.fr       */
+/*   Updated: 2022/10/21 02:37:19 by shyrno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class webServ
 		Cgi&	getCgi();
         Autodex & getAutodex();
         int getMax_body_size();
+        int getConnection();
         std::vector<Socket> &getSock();
         std::pair<std::string, std::string> &getbool_redir();
         void del_redir();
@@ -44,6 +45,7 @@ class webServ
 		const std::string&	getServ_Root() const;
         void    setEnv(char** envp);
         void setSocket(std::vector<Socket> s);
+        void setConnection(int fd);
 
     private:
 		char** env;
@@ -51,6 +53,7 @@ class webServ
         Conf* conf;
         Request* req;
         Response* res;
+        int connection;
         Autodex* indexing;
         int max_body_size;
 		std::string	serv_root;
