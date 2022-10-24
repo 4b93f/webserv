@@ -6,7 +6,7 @@
 /*   By: shyrno <shyrno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 02:20:16 by shyrno            #+#    #+#             */
-/*   Updated: 2022/10/21 23:46:48 by shyrno           ###   ########.fr       */
+/*   Updated: 2022/10/24 16:05:05 by chly-huc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ int routine(webServ &web, std::string str, char *buffer, int ret)
 
 int sending(webServ &web, std::string str, int i)
 {
+
     if (!str.empty())
     {
         web.getRes().find_method(web, i);
@@ -101,7 +102,10 @@ int sending(webServ &web, std::string str, int i)
         for (unsigned long i = 0; i < web.getRes().getResponse().size(); i += count)
         {
             if ((count = send(web.getConnection(), web.getRes().getResponse().data() + i, web.getRes().getResponse().size() - i, 0)) < 0)
+            {
+                std::cout << errno << std::endl;
                 return printerr("Error with send ...");
+            }
             if (!count)
                 break;
         }
@@ -115,7 +119,7 @@ int sending(webServ &web, std::string str, int i)
 int engine(webServ & web, int *step)
 {
     char buffer[BUFFER_SIZE];
-    int ret = 0, i = 0;
+    int ret = 0;
     // int nbsock = 0;
     // for (std::vector<Socket>::iterator it = web.getSock().begin(); it != web.getSock().end();it++)
     // {
@@ -151,7 +155,7 @@ int engine(webServ & web, int *step)
         // }
         if (FD_ISSET(web.getConnection(), &rready) && *step == 2)
         {
-            if (!sending(web, str, i))
+            if (!sending(web, str, it - web.getSock().begin()))
                 return 0;
             *step = 3;
             it->read = true;
@@ -169,7 +173,10 @@ int engine(webServ & web, int *step)
                 *step = 2;
             }
             else if (ret == 0)
-                return web.cleave_info("Recv : 0", GO);
+            {
+                close(web.getConnection());
+                *step = 0;
+            }
             else
                 return web.cleave_info("Error with recv : -1", GO);
             return 1;
@@ -222,7 +229,7 @@ int selecting(webServ & web, int *step)
         }
         if (*step == 2)
             FD_SET(web.getConnection(), &rready);
-        usleep(200);
+        usleep(2000);
         std::cout << "Loop Select ..." << std::endl;
         if ((status = select(FD_SETSIZE, &sready, &rready, NULL, &tv)) < 0)
         {

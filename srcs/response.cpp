@@ -432,6 +432,7 @@ void Response::concat_response(webServ & web)
 		else
 			full_response = version + ' ' + itoa(status) + ' ' + stat_msg + '\n' + "Content-Length: " + content_length + body;
 	}
+	//std::cout << full_response << std::endl;
     web.del_redir();
 	web.setErrorPage("");
 }
