@@ -1,2 +1,2 @@
 login=awd
-password=awda
+password=awdaw
