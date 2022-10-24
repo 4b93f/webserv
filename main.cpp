@@ -255,9 +255,13 @@ int main(int argc, char **argv, char **envp)
         return printerr("Usage : ./Webserv [conf file]");
     webServ web(argv[1], envp);
 	web.setServ_Root(envp);
-    web.getCgi().set_transla_path(envp);
     if (!setup(web))
         return web.cleave_info("Error with setup ...", GO);
+    if (!web.getCgi().set_transla_path(envp))
+    {
+        std::cout << "Error No executable found for cgi : cgi not available" << std::endl;
+        web.setCgi_state(0);
+    }
     if (!error_handling(web))
         web.cleave_info("Error with setup ...", STOP);
     std::cout << "\n+++++++ Waiting for new connection ++++++++\n\n" << std::endl;

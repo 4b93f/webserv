@@ -67,7 +67,7 @@ std::string	Cgi::start_script(webServ& web)
 void Cgi::run_api(webServ& web, confData& conf)
 {
 	setCGIBool(1);
-	if (conf_php_ini(web, conf) >= 0)
+	if (conf_php_ini(web, conf) >= 0 && web.getCgi_state())
 	{
 		web.getCgi().setFullpath(web, conf);
 		web.getCgi().setEnv(web, conf);
@@ -99,7 +99,7 @@ std::string& Cgi::getPath()
 	return pathmap[ext];
 }
 
-void	Cgi::set_transla_path(char** envp)
+int	Cgi::set_transla_path(char** envp)
 {
 	std::vector<std::string> paths;
 	std::string searched = "PATH=";
@@ -112,11 +112,12 @@ void	Cgi::set_transla_path(char** envp)
 			break;
 		}
 	}
-	find_transla_path("php-cgi", "php", paths);
-	find_transla_path("python3", "py", paths);
+	if (!find_transla_path("php-cgi", "php", paths) || !find_transla_path("python3", "py", paths))
+		return 0;
+	return 1;
 }
 
-void	Cgi::find_transla_path(std::string scri, std::string ext, std::vector<std::string> paths)
+int	Cgi::find_transla_path(std::string scri, std::string ext, std::vector<std::string> paths)
 {
 	for (unsigned long i = 0; i < paths.size(); i++)
 	{
@@ -125,9 +126,10 @@ void	Cgi::find_transla_path(std::string scri, std::string ext, std::vector<std::
 		{
 			pathmap[ext] = tmp;
 			//std::cout << "i initialized script :" << ext << " with :" << tmp << std::endl;
-			break ;
+			return 1;
 		}
 	}
+	return 0;
 }
 
 char**	Cgi::getArgv()

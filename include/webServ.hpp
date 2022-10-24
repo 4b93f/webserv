@@ -48,6 +48,8 @@ class webServ
         void setConnection(int fd);
         void setErrorPage(std::string str);
         std::string getErrorPage();
+        int getCgi_state();
+        void    setCgi_state(int state);
 
     private:
 		char** env;
@@ -62,6 +64,7 @@ class webServ
         std::vector<Socket> sock;
         std::pair<std::string, std::string> bool_redir;
         std::string error_page;
+        int cgi_state;
 };
 
 #endif

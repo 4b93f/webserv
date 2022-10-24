@@ -21,8 +21,8 @@ class Cgi{
 		void	setCGIBool(int i);
 		void	setFullpath(webServ& web, confData& conf);
 		std::string	start_script(webServ& web);
-		void	set_transla_path(char** envp);
-		void	find_transla_path(std::string scri, std::string ext, std::vector<std::string> paths);
+		int	set_transla_path(char** envp);
+		int	find_transla_path(std::string scri, std::string ext, std::vector<std::string> paths);
 		void	setEnv(webServ& web, confData& conf);
 		int 	conf_php_ini(webServ& web, confData& conf);
 

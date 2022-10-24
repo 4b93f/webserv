@@ -21,6 +21,7 @@ webServ::webServ()
 	_cgi = new Cgi;
 	max_body_size = 0;
 	connection = -1;
+	cgi_state = 1;
 }
 
 webServ::webServ(std::string argv, char **envp)
@@ -33,6 +34,7 @@ webServ::webServ(std::string argv, char **envp)
 	max_body_size = 0;
 	connection = -1;
 	this->env = envp;
+	cgi_state = 1;
 
     if (!(conf->parsing(argv)))
 		cleave_info("", STOP);
@@ -46,6 +48,7 @@ webServ::webServ(std::string argv, char **envp)
 		Socket next;
 		sock.push_back(next);
 	}
+
 }
 
 webServ::~webServ()
@@ -60,7 +63,7 @@ webServ::~webServ()
 
 webServ::webServ(webServ & other):conf(new Conf(other.getConf())), req(new Request(other.getReq())), res(new Response(other.getRes())), indexing(new Autodex(other.getAutodex())), serv_root(other.getServ_Root()), sock(other.getSock())
 {
-    
+    cgi_state = 1;
 }
 
 Conf & webServ::getConf()  
@@ -188,3 +191,12 @@ char ** webServ::getEnv()
 	return env;
 }
 
+int webServ::getCgi_state()
+{
+	return cgi_state;
+}
+
+void    webServ::setCgi_state(int state)
+{
+	cgi_state = state;
+}
