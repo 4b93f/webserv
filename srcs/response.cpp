@@ -378,9 +378,9 @@ void Response::MethodPost(webServ & web, confData & conf)
 	else
 	{
 		std::vector<std::pair<std::string, std::string> > post(post_arg(web.getReq().getBody(), nbr));
+		setStatus(205);
 		post_exe(web, post, conf, nbr);
 		post.clear();
-		setStatus(205);
 	}
 }
 

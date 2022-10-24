@@ -343,7 +343,7 @@ std::vector<std::pair<std::string, std::string> > post_arg(std::string str, int 
         vec[i].first = cut.substr(0, tmp.find('='));
         vec[i].second = cut.substr(tmp.find('=') + 1, tmp.size());
         tmp = tmp.substr(tmp.find('&') + 1, tmp.size());
-        std::cout << tmp << std::endl;
+        
         if (tmp.find('&') == std::string::npos)
         {
             vec[i + 1].first = tmp.substr(0, tmp.find('='));
@@ -374,11 +374,13 @@ void post_exe(webServ & web, std::vector<std::pair<std::string, std::string> > p
     {
         if (fullpath[0] == '.' && fullpath[1] == '/')
             fullpath.erase(0, 2);
-        std::ofstream out(fullpath.data());
+        std::ofstream out(fullpath.data(), std::ios::out);
         if (!out.is_open())
         {
-            closedir(dir);
-            web.cleave_info("Error with open", STOP);
+            // closedir(dir);
+            // web.cleave_info("Error with open", GO);
+            // printerr("Error with open");
+            web.getRes().setStatus(500);
         }
         else
         {
@@ -575,32 +577,32 @@ int is_bodySized(webServ & web, confData & conf)
 
 }
 
-int ReadWriteProtection(int fd, int what)
-{
-    struct timeval tv;
-    int status = 0;
+// int ReadWriteProtection(int fd, int what)
+// {
+//     struct timeval tv;
+//     int status = 0;
 
-    tv.tv_sec = 1;
-    tv.tv_usec = 0;
-    fd_set read_set, read_dump, write_set, write_dump;
-    FD_ZERO(&read_dump);
-    FD_ZERO(&write_dump);
-    if (what == 0)
-        FD_SET(fd, &read_dump);
-    else
-        FD_SET(fd, &write_dump);
-    while (status == 0)
-    {
-        FD_ZERO(&read_set);
-        FD_ZERO(&write_set);
-        if (what == 0)
-            read_set = read_dump;
-        else
-            write_set = write_dump;
-        if ((status = select(fd + 1, &read_set, &write_set, NULL, &tv)) < 0)
-            return printerr("Error with ReadWrite protection ...");
-        if (status == 0)
-            std::cout << "Timeout ... Select Retry ..." << std::endl;
-    }
-    return 1;
-}
+//     tv.tv_sec = 1;
+//     tv.tv_usec = 0;
+//     fd_set read_set, read_dump, write_set, write_dump;
+//     FD_ZERO(&read_dump);
+//     FD_ZERO(&write_dump);
+//     if (what == 0)
+//         FD_SET(fd, &read_dump);
+//     else
+//         FD_SET(fd, &write_dump);
+//     while (status == 0)
+//     {
+//         FD_ZERO(&read_set);
+//         FD_ZERO(&write_set);
+//         if (what == 0)
+//             read_set = read_dump;
+//         else
+//             write_set = write_dump;
+//         if ((status = select(fd + 1, &read_set, &write_set, NULL, &tv)) < 0)
+//             return printerr("Error with ReadWrite protection ...");
+//         if (status == 0)
+//             std::cout << "Timeout ... Select Retry ..." << std::endl;
+//     }
+//     return 1;
+// }

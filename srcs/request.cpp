@@ -216,8 +216,8 @@ void        Request::add_Wrote(int read)
 
 int        Request::Write_Brutbody(char* buff, int size)
 {
-    if (!ReadWriteProtection(getBrutbody_fileno(), 1))
-        return printerr("Error with write on brutbody ...");
+    // if (!ReadWriteProtection(getBrutbody_fileno(), 1))
+    //     return printerr("Error with write on brutbody ...");
     if ((write(getBrutbody_fileno(), buff, size) < 0))
         return printerr("Error with write..");
     add_Wrote(size);
