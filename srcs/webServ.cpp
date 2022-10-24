@@ -34,7 +34,8 @@ webServ::webServ(std::string argv, char **envp)
 	connection = -1;
 	this->env = envp;
 
-    conf->parsing(argv);
+    if (!(conf->parsing(argv)))
+		cleave_info("", STOP);
 	if (!conf->getNbrServer())
 		cleave_info("Error : 0 server found ...", STOP);
 	else if (conf->getNbrServer() == -1)

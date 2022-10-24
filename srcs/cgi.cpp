@@ -254,45 +254,15 @@ void	Cgi::setEnv(webServ& web, confData& conf)
 	if (!tmp.empty() && !isalnum(tmp.back())) {
         tmp.resize(tmp.size() - 1);
     }
-	//  + itoa(web.getReq().getQuery_string().size());
 	env.push_back(tmp);
 	tmp = "PATH_INFO=" + web.getReq().getUrl();
 	env.push_back(tmp);
-	// tmp = "PATH_TRANSLATED=" + web.getReq().getUrl();
-	// env.push_back(tmp);
-	// tmp = "REMOTEaddr=" + conf.getAdress();
-	// env.push_back(tmp);
-	// tmp = "REMOTE_IDENT=" + search_value_vect(header, "Authorization:");
-	// env.push_back(tmp);
-	// tmp = "REMOTE_USER=" + search_value_vect(header, "Authorization:");
-	// env.push_back(tmp);
-	// tmp = "REQUEST_URI=" + web.getReq().getUrl();
-	// if (!web.getReq().getQuery_string().empty())
-	// 	tmp += "?" + web.getReq().getQuery_string();
-	// env.push_back(tmp);
-	// tmp = "SERVER_NAME=";
-	// if(search_value_vect(header, "Host: ").size())
-	// {
-	// 	tmp += search_value_vect(header, "Host: ");
-	// }
-	// else
-	// {
-	// 	tmp += conf.getServName();
-	// }
-	// if (!tmp.empty() && !isalnum(tmp.back())) {
-    //     tmp.resize(tmp.size() - 1);
-    // }
-	//env.push_back(tmp);
-	// tmp = "SERVER_PORT=" + conf.getPort();
-	// env.push_back(tmp);
 	tmp = "SERVER_PROTOCOL=HTTP/1.1";
 	env.push_back(tmp);
 	tmp = "SERVER_SOFTWARE=Webserv/1.0";
 	env.push_back(tmp);
 	tmp = "PHPRC=" + web.getServ_Root() + "/www/php/include/php.ini";
 	env.push_back(tmp);
-	// tmp = "HTTP_=" + web.getReq().getHeader();
-	// env.push_back(tmp);
 	for (unsigned long i = 0; i < env.size(); i++)
 	{
 		for (unsigned long j = 0; j < env[i].size(); j++)

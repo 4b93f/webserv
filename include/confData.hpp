@@ -25,8 +25,8 @@ class confData
         confData(const confData & other);
 		confData& operator=(const confData& other);
         void print_info();
-        void scrapData();
-        void scrapLocation();
+        int scrapData();
+        int scrapLocation();
         void complete_loc(int i);
         int parsing(std::string path);
         int LocationExist(std::string str);

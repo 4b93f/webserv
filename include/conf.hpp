@@ -26,7 +26,7 @@ class Conf
         Conf(const Conf & other);
 		Conf& operator=(const Conf& other);
         void print_info();
-        void parsing(std::string path);
+        int parsing(std::string path);
         
         confData& getConflist(int index);
         long getNbrServer() const;

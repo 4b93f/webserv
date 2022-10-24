@@ -83,14 +83,16 @@ confData & Conf::getConflist(int index)
     return (confList)[index];
 }
 
-void Conf::parsing(std::string path)
+int Conf::parsing(std::string path)
 {
     if (!(nbr_serv = (confList)[0].parsing(path)) || nbr_serv == -1)
-        return;
+        return 0;
     confList.resize(nbr_serv);
     for (long i = 0; i < nbr_serv; i++)
-        (confList)[i].scrapData();
+        if (!((confList)[i].scrapData()))
+            return 0;
     print_info();
+    return 1;
 }
 
 const std::vector<confData> Conf::getVectorConflist() const

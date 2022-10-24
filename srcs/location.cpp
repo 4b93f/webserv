@@ -288,7 +288,7 @@ int location::scrapData(std::string data)
         if (tmp.find("}") != std::string::npos)
             break;
         if (tmp.size() >= 1 && tmp[tmp.size() - 1] != ';')
-            printerr("Error with conf file syntax ...");
+            return printerr("Error with conf file syntax ...");
         else if (tmp.find("root")!= std::string::npos)
             setPath(tmp);
         else if (tmp.find("methods")!= std::string::npos)
@@ -308,12 +308,12 @@ int location::scrapData(std::string data)
         else if (tmp.find("return")!= std::string::npos)
             setRedir(tmp);
         else
-            printerr("Something is wrong with your config file ...");
+            return printerr("Something is wrong with your config file ...");
     }
     if (data.find("server") != std::string::npos)
         data = data.substr(data.find("server"), data.size());
     if (path.empty())
         path = "./";
-    return 0;
+    return 1;
 }
 

@@ -361,7 +361,7 @@ std::string location_str(std::string str)
     return tmp;
 }
 
-void confData::scrapData()
+int confData::scrapData()
 {
     std::string tmp;
     std::string cpy_data(data);
@@ -376,7 +376,7 @@ void confData::scrapData()
             break;
         data = data.substr(data.find("\n") + 1, data.size());
         if (tmp.size() >= 1 && tmp[tmp.size() - 1] != ';')
-            printerr("Error with conf file syntax ...");
+            return printerr("Error with conf file syntax ...");
         else if (tmp.find("listen")!= std::string::npos)
             setAddress(tmp);
         else if (tmp.find("server_name")!= std::string::npos)
@@ -400,14 +400,15 @@ void confData::scrapData()
         else if (tmp.find("return") != std::string::npos)
             setRedir(tmp);
         else
-            printerr("Something is wrong with your config file ...");
+            return printerr("Something is wrong with your config file ...");
     }
-    scrapLocation();    
+    if (!scrapLocation())
+        return 0;
+    return 1; 
 }
 
-void confData::scrapLocation()
+int confData::scrapLocation()
 {
-    int index = -1;
     std::string cpy_data(data);
     
     std::cout << "data is == " << data << std::endl;
@@ -423,9 +424,11 @@ void confData::scrapLocation()
         complete_loc(x);
     for (unsigned long x = 0; x < nbr_loc; x++)
     {
-        index = (loc)[x].scrapData(location_str(cpy_data));
+        if (!((loc)[x].scrapData(location_str(cpy_data))))
+            return 0;
         cpy_data = cpy_data.substr(cpy_data.find("location") + 1, cpy_data.size());
     }
+    return 1;
 }
 
 void confData::complete_loc(int i)
