@@ -406,7 +406,7 @@ void Response::MethodDel(webServ&  web, confData& conf)
 
 void Response::concat_response(webServ & web)
 {
-    if (atoi(content_length.c_str()) > web.getMax_body_size() && web.getMax_body_size() > 0)
+    if (atoi(content_length.data()) > web.getMax_body_size() && web.getMax_body_size() > 0)
 	{
 		setStatus(413);
 		setStatMsg();

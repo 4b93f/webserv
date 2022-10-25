@@ -59,7 +59,7 @@ int Socket::setup(confData & conf)
 int Socket::create_socket(confData & conf)
 {
     serv_address.sin_family = AF_INET;
-    serv_address.sin_addr.s_addr = inet_addr(conf.getAdress().c_str());
+    serv_address.sin_addr.s_addr = inet_addr(conf.getAdress().data());
     serv_address.sin_port = htons(atoi(conf.getPort().data()));
     if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         return printerr("Error with socket creation ...");

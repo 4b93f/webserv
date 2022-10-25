@@ -40,7 +40,7 @@ int error_handling(webServ & web)
         j = -1;
         if (web.getConf().getAddress(i).empty() || web.getConf().getPort(i).empty())
             return printerr("Error : No address or port configured ...");
-        else if (web.getConf().getPort(i).size() > 4 || atoi(web.getConf().getPort(i).c_str()) < 0)
+        else if (web.getConf().getPort(i).size() > 4 || atoi(web.getConf().getPort(i).data()) < 0)
             return printerr("Error with port ...");
         else
         {
