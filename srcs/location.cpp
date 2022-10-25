@@ -283,7 +283,7 @@ int location::scrapData(std::string data)
         data = data.substr(data.find("\n") + 1, data.size());
         if (tmp.find("server {") != std::string::npos)
             break;
-        if (str_isspace(tmp) || tmp.find("{") != std::string::npos || tmp.find("location")!= std::string::npos)
+        if (str_isspace(tmp) || tmp.empty() ||tmp.find("{") != std::string::npos || tmp.find("location")!= std::string::npos)
             continue;
         if (tmp.find("}") != std::string::npos)
             break;
@@ -310,8 +310,8 @@ int location::scrapData(std::string data)
         else
             return printerr("Something is wrong with your config file ...");
     }
-    if (data.find("server") != std::string::npos)
-        data = data.substr(data.find("server"), data.size());
+    if (data.find("server {") != std::string::npos)
+        data = data.substr(data.find("server {"), data.size());
     if (path.empty())
         path = "./";
     return 1;

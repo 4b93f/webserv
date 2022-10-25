@@ -299,7 +299,7 @@ int confData::parsing(std::string path)
     if (check_error(data))
         return -1;
     check_quote(data);
-    return check_server_nbr(data, "server ");
+    return check_server_nbr(data, "server {");
 }
 
 void confData::print_info()
@@ -368,13 +368,15 @@ int confData::scrapData()
     std::string tmp;
     std::string cpy_data(data);
     tmp = data.substr(0, data.find("\n"));
-    if (!tmp.find("server"))
+    if (!tmp.find("server {"))
         data = data.substr(data.find("\n") + 1, data.size());
+    else
+        return 1;
     while (!data.empty())
     {   
         tmp = data.substr(0, data.find("\n"));
-        std::cout << tmp << std::endl;
-        if (!tmp.find("server") || tmp.find("{") != std::string::npos || tmp.find("location") != std::string::npos)
+        std::cout << "ah : "<<tmp << std::endl;
+        if (!tmp.find("server {") || tmp.empty() ||tmp.find("{") != std::string::npos || tmp.find("location") != std::string::npos)
             break;
         data = data.substr(data.find("\n") + 1, data.size());
         if (tmp.size() >= 1 && tmp[tmp.size() - 1] != ';')
@@ -402,7 +404,7 @@ int confData::scrapData()
         else if (tmp.find("return") != std::string::npos)
             setRedir(tmp);
         else
-            return printerr("Something is wrong with your config file ...");
+            return printerr("your config file ...");
     }
     if (!scrapLocation())
         return 0;
@@ -414,8 +416,8 @@ int confData::scrapLocation()
     std::string cpy_data(data);
     
     std::cout << "data is == " << data << std::endl;
-    if (data.find("server") != std::string::npos)
-        data = data.substr(data.find("server"), data.size());
+    if (data.find("server {") != std::string::npos)
+        data = data.substr(data.find("server {"), data.size());
     if (path.empty())
         path = "./";
     nbr_loc = check_location_nbr(cpy_data, "location ");
@@ -477,8 +479,11 @@ int confData::check_error(std::string data)
     int flag_location = 0;
     for (unsigned long i = 0; i < lines.size(); i++)
     {
+        std::cout << flag_serv << "hihhi : "<<lines[i] << std::endl;
         remove_spaces(lines[i]);
-        if (lines[i].find("server") != std::string::npos && flag_serv == 0)
+        if (lines[i].empty())
+            continue;
+        else if (lines[i].find("server {") != std::string::npos && flag_serv == 0)
         {
             if (lines[i].find('{') == std::string::npos && i + 1 < lines.size() && lines[i + 1].find('{') != std::string::npos)
                 i++;

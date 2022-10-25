@@ -577,10 +577,6 @@ int is_bodySized(webServ & web, confData & conf)
 
 }
 
-char *to_c_string(std::string str)
-{
-    
-}
 // int ReadWriteProtection(int fd, int what)
 // {
 //     struct timeval tv;

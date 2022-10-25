@@ -102,11 +102,8 @@ int sending(webServ &web, std::string str, int i)
         for (unsigned long i = 0; i < web.getRes().getResponse().size(); i += count)
         {
             if ((count = send(web.getConnection(), web.getRes().getResponse().data() + i, web.getRes().getResponse().size() - i, 0)) < 0)
-            {
-                std::cout << errno << std::endl;
-                return printerr("Error with send ...");
-            }
-            if (!count)
+                printerr("Error with send ...");
+            if (!count || count == -1)
                 break;
         }
         web.getCgi().setCGIBool(0);
