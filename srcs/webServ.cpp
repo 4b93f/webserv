@@ -37,7 +37,7 @@ webServ::webServ(std::string argv, char **envp)
 	cgi_state = 1;
 
     if (!(conf->parsing(argv)))
-		cleave_info("", STOP);
+		cleave_info("Error : Conf file corrupted", STOP);
 	if (!conf->getNbrServer())
 		cleave_info("Error : 0 server found ...", STOP);
 	else if (conf->getNbrServer() == -1)

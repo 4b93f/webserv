@@ -32,6 +32,7 @@ class confData
         int LocationExist(std::string str);
         void clear_info();
         const location& LocationFinder(std::string str) const;
+        int check_error(std::string data);
         
         int getAutoIndex() const;
         int getLocationNbr() const;

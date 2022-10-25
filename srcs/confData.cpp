@@ -296,6 +296,8 @@ int confData::parsing(std::string path)
         return -1;
     buff << fd.rdbuf();
     data = buff.str();
+    if (check_error(data))
+        return -1;
     check_quote(data);
     return check_server_nbr(data, "server ");
 }
@@ -465,4 +467,38 @@ void confData::complete_loc(int i)
 void clear_info()
 {
     
+}
+
+int confData::check_error(std::string data)
+{
+    std::vector<std::string> lines;
+    splitstring(data, lines, '\n');
+    int flag_serv = 0;
+    int flag_location = 0;
+    for (unsigned long i = 0; i < lines.size(); i++)
+    {
+        remove_spaces(lines[i]);
+        if (lines[i].find("server") != std::string::npos && flag_serv == 0)
+        {
+            if (lines[i].find('{') == std::string::npos && i + 1 < lines.size() && lines[i + 1].find('{') != std::string::npos)
+                i++;
+            flag_serv = 1;
+        }
+        else if (lines[i].find("location") != std::string::npos && flag_serv == 1 && flag_location == 0)
+        {
+            if (lines[i].find('{') == std::string::npos && i + 1 < lines.size() && lines[i + 1].find('{') != std::string::npos)
+                i++;
+            flag_location = 1;
+        }
+        else if (lines[i].find('}') != std::string::npos)
+        {
+            if (flag_location == 1)
+                flag_location = 0;
+            else if (flag_serv == 1)
+                flag_serv = 0;
+        }
+        else if (lines[i][lines[i].size() - 1] != ';' && flag_serv == 1)
+            return 1;
+    }
+    return 0;
 }
