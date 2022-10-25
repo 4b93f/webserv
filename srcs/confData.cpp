@@ -159,6 +159,8 @@ void confData::setAddress(std::string str)
         return;
 	splitstring(address, tmp, ':');
     address = tmp[0];
+    if (!tmp[0].compare("localhost"))
+        address = "127.0.0.1";
     port = tmp[1];
 	port = port.substr(0, port.size() - 1);
 }

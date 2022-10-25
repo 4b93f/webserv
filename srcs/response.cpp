@@ -331,6 +331,13 @@ void Response::MethodGet(webServ & web, confData & conf)
 	std::string loc = location_exe(conf, web.getReq().getUrl());
     version = web.getReq().getVersion();
 	setStatus(200);
+	if (loc.empty())
+	{
+		if (atoll(conf.getBodySize().data()) > 0 && atoll(conf.getBodySize().data()) < web.getReq().getWrote())
+			return web.getRes().setStatus(413);
+	}
+	else if (atoll(conf.getGoodLocation(loc).getBodySize().data()) > 0 && atoll(conf.getGoodLocation(loc).getBodySize().data()) < web.getReq().getWrote())
+		return web.getRes().setStatus(413);
 	if (setContentType(web.getReq().getUrl()) == 0)
 	{
 		body = readfile(web, conf, web.getReq().getUrl());
@@ -342,14 +349,11 @@ void Response::MethodGet(webServ & web, confData & conf)
 	else
 	{
 		if (loc.empty())
-		{
 			if (conf.getCGI() == 0)
 				return web.getRes().setStatus(500);
-		}
-		else if (conf.getGoodLocation(loc).getCGI() == 0)
+		if (conf.getGoodLocation(loc).getCGI() == 0)
 			return web.getRes().setStatus(500);
 		web.getCgi().run_api(web, conf);
-			
 	}
 
 }
@@ -358,17 +362,15 @@ void Response::MethodPost(webServ & web, confData & conf)
 {
     int nbr = atoi(web.getReq().getContentLength().data());
 	std::string loc = location_exe(conf, web.getReq().getUrl());
-    if (setContentType(web.getReq().getUrl()) == 1)
+	if (loc.empty())
 	{
-		if (loc.empty())
-		{
-			if (conf.getCGI() == 0)
-				return web.getRes().setStatus(500);
-		}
-		else if (conf.getGoodLocation(loc).getCGI() == 0)
-			return web.getRes().setStatus(500);
-		web.getCgi().run_api(web, conf);
+		if (atoll(conf.getBodySize().data()) > 0 && atoll(conf.getBodySize().data()) < web.getReq().getWrote())
+			return web.getRes().setStatus(413);
 	}
+	else if (atoll(conf.getGoodLocation(loc).getBodySize().data()) > 0 && atoll(conf.getGoodLocation(loc).getBodySize().data()) < web.getReq().getWrote())
+		return web.getRes().setStatus(413);
+    if (setContentType(web.getReq().getUrl()) == 1)
+		web.getCgi().run_api(web, conf);
     else if (!nbr)
 	{
 		setStatus(100);
@@ -377,6 +379,13 @@ void Response::MethodPost(webServ & web, confData & conf)
 	}
 	else
 	{
+		if (loc.empty())
+		{
+			if (conf.getCGI() == 0)
+				return web.getRes().setStatus(500);
+		}
+		if (conf.getGoodLocation(loc).getCGI() == 0)
+			return web.getRes().setStatus(500);
 		std::vector<std::pair<std::string, std::string> > post(post_arg(web.getReq().getBody(), nbr));
 		setStatus(205);
 		post_exe(web, post, conf, nbr);
@@ -406,7 +415,7 @@ void Response::MethodDel(webServ&  web, confData& conf)
 
 void Response::concat_response(webServ & web)
 {
-    if (atoi(content_length.data()) > web.getMax_body_size() && web.getMax_body_size() > 0)
+    if (web.getMax_body_size() > 0 && atoi(content_length.data()) > web.getMax_body_size() && web.getMax_body_size() < web.getReq().getWrote())
 	{
 		setStatus(413);
 		setStatMsg();
@@ -415,7 +424,7 @@ void Response::concat_response(webServ & web)
 		setContentLength();
 		full_response = version + ' ' + itoa(status) + ' ' + stat_msg + '\n' + "Content-Type: " + content_type + '\n' + "Content-Length: " + content_length + "\n\n" + body;
 	}
-	if (status == 403 || status == 404 || status == 405 || status == 500)
+	if (status == 403 || status == 404 || status == 405 || status == 500 || status == 413)
 	{
 		setStatMsg();
 		setContentType(".html");
@@ -432,7 +441,6 @@ void Response::concat_response(webServ & web)
 		else
 			full_response = version + ' ' + itoa(status) + ' ' + stat_msg + '\n' + "Content-Length: " + content_length + body;
 	}
-	//std::cout << full_response << std::endl;
     web.del_redir();
 	web.setErrorPage("");
 }

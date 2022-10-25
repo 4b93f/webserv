@@ -62,53 +62,52 @@ int error_handling(webServ & web)
     return 1;
 }
 
-int routine(webServ &web, std::string str, char *buffer, int ret)
+int routine(webServ &web, char *buffer, int *step, int serv)
 {
-    if (!str.empty())
+    int ret;
+    if ((ret = recv(web.getConnection(), buffer, BUFFER_SIZE - 1, 0)) > 0)
     {
-        web.getReq().getInfo(str);
-        std::string tmp = buffer;
-        int sizeheader = tmp.find("\r\n\r\n") + 4;
         if (web.getReq().getBrutbody_fileno() != -1)
-        {
-            if (!(web.getReq().Write_Brutbody(buffer + sizeheader, ret - sizeheader)))
+            if (!(web.getReq().Write_Brutbody(buffer, ret)))
                 return 0;
-        }
-        else
-            return printerr("Error with brutbody ...");
-        while (!g_ctrl_called && web.getReq().getWrote() < atoi(web.getReq().getContentLength().data()) && web.getReq().getWrote() >= 0)
-        {
-            if ((ret = recv(web.getConnection(), buffer, BUFFER_SIZE - 1, 0)) > 0)
-            {
-                if (web.getReq().getBrutbody_fileno() != -1)
-                    if (!(web.getReq().Write_Brutbody(buffer, ret)))
-                        return 0;
-            }
-            else
-                return printerr("Recv : -1 on body ...");
-        }
+    }
+    else
+        return printerr("Recv : -1 on body ...");
+    if (!g_ctrl_called && web.getReq().getWrote() >= atoll(web.getReq().getContentLength().data()) && web.getReq().getWrote() >= 0)
+    {
+        web.getRes().find_method(web, serv);
+        web.getRes().concat_response(web);
+        *step = 3;
     }
     return 1;
 }
 
-int sending(webServ &web, std::string str, int i)
+int sending(webServ &web, std::string str, int* step, std::vector<Socket>::iterator it)
 {
-
+    static unsigned long int i = 0;
     if (!str.empty())
     {
-        web.getRes().find_method(web, i);
-        web.getRes().concat_response(web);
+        // web.getRes().find_method(web, i);
+        // web.getRes().concat_response(web);
         long count = 0;
-        for (unsigned long i = 0; i < web.getRes().getResponse().size(); i += count)
-        {
+        // for (unsigned long i = 0; i < web.getRes().getResponse().size(); i += count)
+        // {
             if ((count = send(web.getConnection(), web.getRes().getResponse().data() + i, web.getRes().getResponse().size() - i, 0)) < 0)
                 printerr("Error with send ...");
+            std::cout << "sending : " << count << "|" << web.getRes().getResponse().data() + i << std::endl;
             if (!count || count == -1)
-                break;
+                return 1;
+            i +=count;
+        // }
+        if (i >= web.getRes().getResponse().size())
+        {
+            i = 0;
+            web.getCgi().setCGIBool(0);
+            web.getRes().clear_info();
+            web.getReq().clear_info();
+            *step = 4;
+            it->read = true;
         }
-        web.getCgi().setCGIBool(0);
-        web.getRes().clear_info();
-        web.getReq().clear_info();
     }
     return 1;
 }
@@ -117,20 +116,9 @@ int engine(webServ & web, int *step)
 {
     char buffer[BUFFER_SIZE];
     int ret = 0;
-    // int nbsock = 0;
-    // for (std::vector<Socket>::iterator it = web.getSock().begin(); it != web.getSock().end();it++)
-    // {
-    //     if (FD_ISSET(it->getFd(), &sready))
-    //         nbsock++;
-    // }
     std::vector<Socket>::iterator it = web.getSock().begin();
     while(it != web.getSock().end() && it->read == true)
-    {
         it++;
-    }
-    // if (it->read == 0 && !FD_ISSET(it->getFd(), &sready) && !FD_ISSET(web.getConnection(), &rready))
-    //     it->read = true;
-    std::cout << "i buccle in pos : " << it - web.getSock().begin() << " and step = " << *step << std::endl;
     if (it == web.getSock().end())
     {
         // exit(0);
@@ -138,26 +126,13 @@ int engine(webServ & web, int *step)
             its->read = false;
         return 1;
     }
-    // for(std::vector<Socket>::iterator it = web.getSock().begin(); it != web.getSock().end();it++)
-    // {
-        // std::cout << "test" << std::endl;
-        // while((it != web.getSock().end() && it->read == 1 )|| (it != web.getSock().end() && !FD_ISSET(it->getFd(), &sready)))
-        //     it++;
-        // std::cout << "i buccle in pos : " << it - web.getSock().begin() << " and step = " << *step << std::endl;
-        // if (it == web.getSock().end())
-        // {
-        //     for(std::vector<Socket>::iterator its = web.getSock().begin(); its != web.getSock().end();its++)
-        //         its->read = 0;
-        //     return 1;
-        // }
-        if (FD_ISSET(web.getConnection(), &rready) && *step == 2)
-        {
-            if (!sending(web, str, it - web.getSock().begin()))
+    if (FD_ISSET(web.getConnection(), &sready) && *step == 2)
+        return routine(web, buffer, step, it - web.getSock().begin());
+    if (FD_ISSET(web.getConnection(), &rready) && *step == 3)
+    {
+        if (!sending(web, str, step, it))
                 return 0;
-            *step = 3;
-            it->read = true;
-            // exit (0);
-            return 1;
+        return 1;
         }
         else if (FD_ISSET(web.getConnection(), &sready) && *step == 1)
         {
@@ -165,9 +140,27 @@ int engine(webServ & web, int *step)
             {
                 buffer[ret] = '\0';
                 str += buffer;
-                if (!routine(web, str, buffer, ret))
-                    return 0;
-                *step = 2;
+                if (!str.empty())
+                {
+                    web.getReq().getInfo(str);
+                    std::string tmp = buffer;
+                    int sizeheader = tmp.find("\r\n\r\n") + 4;
+                    if (web.getReq().getBrutbody_fileno() != -1)
+                    {
+                        if (!(web.getReq().Write_Brutbody(buffer + sizeheader, ret - sizeheader)))
+                            return 0;
+                    }
+                    else
+                        return printerr("Error with brutbody ...");
+                    if (web.getReq().getWrote() < atoll(web.getReq().getContentLength().data()))
+                        *step = 2;
+                    else
+                    {
+                        web.getRes().find_method(web, it - web.getSock().begin());
+                        web.getRes().concat_response(web);
+                        *step = 3;
+                    }
+                }      
             }
             else if (ret == 0)
             {
@@ -218,16 +211,16 @@ int selecting(webServ & web, int *step)
         FD_ZERO(&rready);
         if (*step == 0)
             sready = sstock;
-        if (*step == 1)
+        if (*step == 1 || *step == 2)
         {
             sready = sstock;
             if (web.getConnection() != -1)
                 FD_SET(web.getConnection(), &sready);
         }
-        if (*step == 2)
+        if (*step == 3)
             FD_SET(web.getConnection(), &rready);
         usleep(2000);
-        std::cout << "Loop Select ..." << std::endl;
+        std::cout << "Loop Select ..." << *step << std::endl;
         if ((status = select(FD_SETSIZE, &sready, &rready, NULL, &tv)) < 0)
         {
             if (!g_ctrl_called)
@@ -267,7 +260,7 @@ int main(int argc, char **argv, char **envp)
     {
         if (!selecting(web, &step) || (!engine(web, &step)))
             break;
-        if (step == 3 && web.getConnection() > -1)
+        if (step == 4 && web.getConnection() > -1)
         {
             close(web.getConnection());
             web.setConnection(-1);

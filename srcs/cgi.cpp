@@ -12,6 +12,7 @@ std::string	Cgi::start_script(webServ& web)
 	pipe(outpip);
 	char buffer[10000];
 	int ret;
+	std::cout << "OMG\n";
 	//std::cout << "This :" << web.getCgi().getPath() << " received this brutbody::::::::::::::::::::::::::::::::::::::::::::::::::"<< std::endl;
 	// if (!ReadWriteProtection(web.getReq().getBrutbody_fileno(), 1))
 	// 	web.cleave_info("Error with select brutbody ...", STOP);
@@ -57,7 +58,7 @@ std::string	Cgi::start_script(webServ& web)
 		if (size == -1)
 			printerr("Error with read ...");
 	}
-	// std::cout << "php script answered with ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << std::endl << rep << std::endl << "-------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << "php script answered with ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << std::endl << rep << std::endl << "-------------------------------------------------------------------------------------------" << std::endl;
 	close(outpip[0]);
 	delete[] argtmp;
 	delete[] envtmp;

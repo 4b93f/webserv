@@ -129,9 +129,9 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
             url.resize(url.size() - 1);
 	}
 	index_path = index_exe(conf, loc);
-    // std::cout << "url :" << url << std::endl;
-    // std::cout << "fullpath is : " << fullpath << std::endl;
+    std::cout << "url :" << url << std::endl;
     dir = opendir(url.data());
+    std::cout << "fullpath is : " << fullpath << std::endl;
     if (dir != NULL)
     {
         // std::cout << "-------------------------- "<< std::endl;
@@ -140,15 +140,16 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
         // std::cout << "fullpath = " << fullpath << std::endl;
         if (conf.LocationExist(loc))
         {
-            if (!conf.getGoodLocation(loc).getAutoIndex() && conf.getGoodLocation(loc).getIndex().empty())
+            if (!conf.getGoodLocation(loc).getAutoIndex() && (conf.getGoodLocation(loc).getIndex().empty() || index_path.empty()))
                 fullpath = ERROR_403;
-            if (conf.getGoodLocation(loc).getAutoIndex())
+            else if (!index_path.empty() && !conf.getGoodLocation(loc).getIndex().empty())
+                fullpath = index_path;
+            else if (conf.getGoodLocation(loc).getAutoIndex())
 			{
 				closedir(dir);
                 return web.getAutodex().create_dex(web, url);  
 			}          
-            if (!conf.getGoodLocation(loc).getIndex().empty())
-                fullpath = index_path;
+                
         }
         else
         {
@@ -157,14 +158,14 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
             {
                 if (!conf.getAutoIndex() && conf.getIndex().empty())
                     fullpath = ERROR_403;
+                else if (!index_path.empty() && !conf.getIndex().empty())
+                    fullpath = index_path;
                 else if (conf.getAutoIndex())
 				{
 					web.getRes().setStatus(200);
 					closedir(dir);
                     return web.getAutodex().create_dex(web, url);
 				}
-                else if (!conf.getIndex().empty())
-                    fullpath = index_path;
             }
         }
 		closedir(dir);
@@ -188,7 +189,7 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
         web.getRes().setStatMsg();
         fullpath = ERROR_403;
     }
-    // std::cout << "Final fullpath = " << fullpath << std::endl;
+    std::cout << "Final fullpath = " << fullpath << std::endl;
     if (!fullpath.compare(ERROR_403) || !fullpath.compare(ERROR_404))
     {
         if (!fullpath.compare(ERROR_404))
@@ -198,6 +199,7 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
     }
     else
     {
+        std::cout << "Index is  : " << index_path << std::endl;
         fd.open(fullpath.data());
         if (fd.is_open())
         {
