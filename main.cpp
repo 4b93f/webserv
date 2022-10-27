@@ -94,7 +94,7 @@ int sending(webServ &web, std::string str, int* step, std::vector<Socket>::itera
         // {
             if ((count = send(web.getConnection(), web.getRes().getResponse().data() + i, web.getRes().getResponse().size() - i, 0)) < 0)
                 printerr("Error with send ...");
-            std::cout << "sending : " << count << "|" << web.getRes().getResponse().data() + i << std::endl;
+            //std::cout << "sending : " << count << "|" << web.getRes().getResponse().data() + i << std::endl;
             if (!count || count == -1)
                 return 1;
             i +=count;
@@ -203,7 +203,7 @@ int selecting(webServ & web, int *step)
 {
     int status = 0;
     struct timeval tv;
-    tv.tv_sec = 1;
+    tv.tv_sec = 3;
     tv.tv_usec = 0;
     while(!g_ctrl_called && status == 0)
     {
@@ -220,7 +220,7 @@ int selecting(webServ & web, int *step)
         if (*step == 3)
             FD_SET(web.getConnection(), &rready);
         usleep(2000);
-        std::cout << "Loop Select ..." << *step << std::endl;
+        std::cout << "Loop Select ..." << std::endl;
         if ((status = select(FD_SETSIZE, &sready, &rready, NULL, &tv)) < 0)
         {
             if (!g_ctrl_called)
@@ -228,7 +228,10 @@ int selecting(webServ & web, int *step)
             return (0);
         }
         if (status == 0)
+        {
+            *step = 0;
             std::cout << "Timeout ... Select Retry ..." << std::endl;
+        }
     }
     if (g_ctrl_called)
         return 0;

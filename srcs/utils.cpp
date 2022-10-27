@@ -99,7 +99,7 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
             web.setbool_redir(conf.getGoodLocation(loc).getRedir());
             return "";
         }  
-		std::cout << "Final location is " << loc <<std::endl;
+		//std::cout << "Final location is " << loc <<std::endl;
         if (!conf.getGoodLocation(loc).getLocation_name().compare(req_file.substr(0, conf.getGoodLocation(loc).getLocation_name().size())) && loc.compare("/"))
         {
             req_file = req_file.substr(conf.getGoodLocation(loc).getLocation_name().size(), req_file.size());
@@ -129,9 +129,9 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
             url.resize(url.size() - 1);
 	}
 	index_path = index_exe(conf, loc);
-    std::cout << "url :" << url << std::endl;
+    //std::cout << "url :" << url << std::endl;
     dir = opendir(url.data());
-    std::cout << "fullpath is : " << fullpath << std::endl;
+    //std::cout << "fullpath is : " << fullpath << std::endl;
     if (dir != NULL)
     {
         // std::cout << "-------------------------- "<< std::endl;
@@ -189,7 +189,7 @@ std::string readfile(webServ & web, confData & conf, std::string req_file)
         web.getRes().setStatMsg();
         fullpath = ERROR_403;
     }
-    std::cout << "Final fullpath = " << fullpath << std::endl;
+    //std::cout << "Final fullpath = " << fullpath << std::endl;
     if (!fullpath.compare(ERROR_403) || !fullpath.compare(ERROR_404))
     {
         if (!fullpath.compare(ERROR_404))
